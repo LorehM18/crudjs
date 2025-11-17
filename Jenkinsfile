@@ -9,8 +9,8 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Clona tu repo público
-                git branch: 'main', url: 'https://github.com/TU_USUARIO/crudjs.git'
+                // Repo público: sin credenciales
+                git branch: 'main', url: 'https://github.com/LorehM18/crudjs.git'
             }
         }
 

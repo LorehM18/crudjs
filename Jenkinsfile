@@ -3,13 +3,16 @@ pipeline {
 
     environment {
         IMAGE_NAME = 'crudjs-app'
-        CONTAINER_NAME = 'node_app'
+        NODE_CONTAINER = 'node_app_jenkins'
+        MYSQL_CONTAINER = 'mysql_db_jenkins'
+        ADMINER_CONTAINER = 'adminer_jenkins'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                // Repo público: sin credenciales
+                echo "Clonando el repositorio..."
+                // Repositorio público, sin credenciales
                 git branch: 'main', url: 'https://github.com/LorehM18/crudjs.git'
             }
         }
@@ -26,10 +29,11 @@ pipeline {
         stage('Deploy Containers') {
             steps {
                 script {
-                    echo "Deteniendo contenedores existentes..."
-                    bat "docker-compose down"
-                    
-                    echo "Levantando contenedores..."
+                    echo "Deteniendo y eliminando contenedores antiguos si existen..."
+                    // Fuerza eliminación de contenedores viejos
+                    bat "docker rm -f %NODE_CONTAINER% %MYSQL_CONTAINER% %ADMINER_CONTAINER% || echo Containers not found"
+
+                    echo "Levantando contenedores con docker-compose..."
                     bat "docker-compose up -d --build"
                 }
             }
@@ -41,7 +45,7 @@ pipeline {
             echo 'Pipeline completado correctamente!'
         }
         failure {
-            echo 'Pipeline falló.'
+            echo 'Pipeline falló. Revisa la consola de Jenkins para detalles.'
         }
     }
 }

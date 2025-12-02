@@ -1,48 +1,40 @@
-version: "3.9"
+version: '3.9'
 
 services:
-  app:
-    build: .
-    container_name: node_app
-    ports:
-      - "3001:3000"
-    environment:
-      DB_HOST: db
-      DB_PORT: 3306
-      DB_USER: root
-      DB_PASSWORD: Datos2025
-      DB_NAME: Prueba01
-    depends_on:
-      - db
-    volumes:
-      - .:/app
-      - /app/node_modules
-
-  db:
+  mysql_db:
     image: mysql:8.0
     container_name: mysql_db
     environment:
-      MYSQL_ROOT_PASSWORD: Datos2025
-      MYSQL_DATABASE: Prueba01
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: testdb
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
     ports:
-      - "3307:3306"
+      - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
 
-  adminer:
-    image: adminer
-    container_name: adminer
-    ports:
-      - "8080:8080"
+  node_app:
+    build: .
+    container_name: node_app
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: >
+      sh -c "npx wait-port mysql_db:3306 --timeout=60 && npm start"
+    depends_on:
+      - mysql_db
 
   test:
-    image: crudjs-app
-    env_file:
-      - .env.test
-    depends_on:
-      - db
+    build: .
+    container_name: crud-pipeline-test
+    working_dir: /app
+    volumes:
+      - .:/app
     command: >
-      sh -c "until nc -z db 3306; do echo waiting for db; sleep 2; done; npm test"
+      sh -c "npx wait-port mysql_db:3306 --timeout=60 && npm test"
+    depends_on:
+      - mysql_db
 
 volumes:
   mysql_data:

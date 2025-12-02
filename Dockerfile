@@ -1,20 +1,20 @@
-# Usamos Node.js 22 LTS
-FROM node:22
+# Usa una versión más estable de Node.js
+FROM node:18-alpine
 
-# Directorio de la app
 WORKDIR /app
 
-# Copiamos archivos de dependencias
+# Copia primero los archivos de dependencias
 COPY package*.json ./
 
-# Instalamos dependencias de forma offline (usa package-lock.json)
-RUN npm ci --prefer-offline --no-audit --progress=false
+# Instalación simple, sin mirror problemático
+RUN npm config set registry https://registry.npmjs.org/ \
+    && npm ci --no-audit --progress=false
 
-# Copiamos el resto del código
+# Copia el resto del código
 COPY . .
 
-# Puerto de la app
+# Exponer puerto
 EXPOSE 3000
 
-# Comando para ejecutar la app
+# Comando de inicio
 CMD ["npm", "start"]

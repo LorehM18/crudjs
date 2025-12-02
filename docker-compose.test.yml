@@ -1,31 +1,27 @@
 version: "3.9"
-
 services:
-  mysql_test:
-    image: mysql:8
-    container_name: mysql_test
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: testdb
-      MYSQL_USER: testuser
-      MYSQL_PASSWORD: testpass
-    ports:
-      - "3307:3306"  # evita conflicto con tu MySQL local
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 5s
-      retries: 10
-
-  crudjs_app:
+  app:
     build: .
-    container_name: crudjs_app_test
-    depends_on:
-      mysql_test:
-        condition: service_healthy
+    container_name: node_app_test
     environment:
-      DB_HOST: mysql_test
-      DB_USER: testuser
-      DB_PASSWORD: testpass
-      DB_NAME: testdb
-    command: npm test
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: Datos2025
+      DB_NAME: Prueba01
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    container_name: mysql_db_test
+    environment:
+      MYSQL_ROOT_PASSWORD: Datos2025
+      MYSQL_DATABASE: Prueba01
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_test_data:/var/lib/mysql
+
+volumes:
+  mysql_test_data:

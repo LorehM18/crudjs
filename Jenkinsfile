@@ -26,7 +26,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 echo 'Ejecutando tests...'
-                bat 'docker run --rm crudjs-app npm test'
+                bat 'set $(type .env.test) && docker run --rm crudjs-app npm test'
             }
         }
         stage('Deploy Containers') {

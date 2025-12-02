@@ -41,7 +41,8 @@ services:
       - .env.test
     depends_on:
       - db
-    command: npm test
+    command: >
+      sh -c "until nc -z db 3306; do echo waiting for db; sleep 2; done; npm test"
 
 volumes:
   mysql_data:

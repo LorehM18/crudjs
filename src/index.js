@@ -36,6 +36,4 @@ if (process.env.NODE_ENV !== 'test') {
         console.log('Server listening on port', app.get('port'))
     );
 }
-if (process.env.NODE_ENV !== 'test') {
-  app.listen(3000, () => console.log('Servidor corriendo en puerto 3000'));
-}
+

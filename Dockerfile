@@ -1,17 +1,22 @@
+# Usa Node 22
 FROM node:22
 
+# Crea el directorio de la app
 WORKDIR /app
 
-# Copiamos package.json y package-lock.json
+# Copia package.json y package-lock.json
 COPY package*.json ./
 
-# Forzamos npm a usar mirror y prefer-offline
+# Instala dependencias
 RUN npm config set registry https://registry.npmmirror.com/ \
     && npm ci --prefer-offline --no-audit --progress=false
 
-# Copiamos el resto del código
+# Copia el resto de la app
 COPY . .
 
-# Puerto y comando
-EXPOSE 3000
-CMD ["npm", "start"]
+# Copia el script de entrada
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Ejecuta el script al iniciar el contenedor
+ENTRYPOINT ["docker-entrypoint.sh"]

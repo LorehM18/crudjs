@@ -2,12 +2,9 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
-            steps {
-                git 'https://github.com/LorehM18/crudjs.git'
-            }
-        }
-
+        // ELIMINÉ la etapa "Checkout" duplicada
+        // Jenkins ya hace checkout automáticamente
+        
         stage('Cleanup') {
             steps {
                 bat '''
@@ -141,9 +138,6 @@ pipeline {
         always {
             echo '=== LIMPIEZA FINAL ==='
             
-            // Opcional: mantener contenedores para debugging
-            // Si quieres mantenerlos corriendo, comenta las siguientes líneas
-            
             bat '''
                 echo "Deteniendo contenedores..."
                 docker stop node_app mysql_db adminer 2>nul || echo "Contenedores ya detenidos"
@@ -175,9 +169,6 @@ pipeline {
         failure {
             echo '💥 PIPELINE FALLÓ'
             echo '📋 Revisar logs para detalles'
-            
-            // Opcional: enviar notificación
-            // emailext body: "Pipeline falló: ${env.BUILD_URL}", subject: "Pipeline Failure", to: "tu@email.com"
         }
         
         unstable {

@@ -1,22 +1,20 @@
-# Usamos la imagen base de Node 22
+# Usamos Node.js 22 LTS
 FROM node:22
 
-# Creamos el directorio de trabajo
+# Directorio de la app
 WORKDIR /app
 
-# Copiamos solo package.json y package-lock.json para aprovechar cache
+# Copiamos archivos de dependencias
 COPY package*.json ./
 
-# Actualizamos npm y usamos un mirror para evitar timeouts
-RUN npm install -g npm@11.6.4 \
-    && npm config set registry https://registry.npmmirror.com/ \
-    && npm ci --prefer-offline --no-audit --progress=false
+# Instalamos dependencias de forma offline (usa package-lock.json)
+RUN npm ci --prefer-offline --no-audit --progress=false
 
-# Copiamos el resto de la app
+# Copiamos el resto del código
 COPY . .
 
-# Exponemos el puerto que usa tu app (ajústalo si es necesario)
+# Puerto de la app
 EXPOSE 3000
 
-# Comando por defecto para correr la app
+# Comando para ejecutar la app
 CMD ["npm", "start"]

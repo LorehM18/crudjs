@@ -1,20 +1,17 @@
-# Usa una versión más estable de Node.js
-FROM node:18-alpine
+FROM node:22
 
 WORKDIR /app
 
-# Copia primero los archivos de dependencias
+# Copiamos package.json y package-lock.json
 COPY package*.json ./
 
-# Instalación simple, sin mirror problemático
-RUN npm config set registry https://registry.npmjs.org/ \
-    && npm ci --no-audit --progress=false
+# Forzamos npm a usar mirror y prefer-offline
+RUN npm config set registry https://registry.npmmirror.com/ \
+    && npm ci --prefer-offline --no-audit --progress=false
 
-# Copia el resto del código
+# Copiamos el resto del código
 COPY . .
 
-# Exponer puerto
+# Puerto y comando
 EXPOSE 3000
-
-# Comando de inicio
 CMD ["npm", "start"]

@@ -38,7 +38,7 @@ pipeline {
                             --network crud-network \
                             -e MYSQL_ROOT_PASSWORD=root123 \
                             -e MYSQL_DATABASE=cruddb \
-                            -p 3306:3306 \
+                            -p 3307:3306 \
                             mysql:8
                     '''
                     

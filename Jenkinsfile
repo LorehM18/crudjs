@@ -2,13 +2,16 @@ pipeline {
     agent any
 
     environment {
-        APP_NAME = 'crudjs-app'
-        MYSQL_CONTAINER = 'mysql_db'
-        MYSQL_PORT = '3307'
-        DOCKER_NETWORK = 'crud-network'
+        APP_IMAGE = "crudjs-app"
+        MYSQL_CONTAINER = "mysql_db"
+        NODE_CONTAINER = "node_app"
+        NETWORK = "crud-network"
+        MYSQL_ROOT_PASSWORD = "root123"
+        MYSQL_DATABASE = "cruddb"
     }
 
     stages {
+
         stage('Checkout SCM') {
             steps {
                 checkout scm
@@ -18,12 +21,10 @@ pipeline {
         stage('Cleanup') {
             steps {
                 script {
-                    echo 'Limpiando contenedores previos...'
-                    bat """
-                        docker stop node_app %MYSQL_CONTAINER% adminer 2>nul || exit 0
-                        docker rm node_app %MYSQL_CONTAINER% adminer 2>nul || exit 0
-                        docker-compose down --remove-orphans --volumes 2>nul || exit 0
-                    """
+                    echo "Limpiando contenedores previos..."
+                    bat "docker stop ${NODE_CONTAINER} ${MYSQL_CONTAINER} adminer 2>nul || exit 0"
+                    bat "docker rm ${NODE_CONTAINER} ${MYSQL_CONTAINER} adminer 2>nul || exit 0"
+                    bat "docker network rm ${NETWORK} 2>nul || exit 0"
                 }
             }
         }
@@ -31,8 +32,8 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    echo 'Construyendo imagen Docker...'
-                    bat "docker build --no-cache -t %APP_NAME% ."
+                    echo "Construyendo imagen Docker..."
+                    bat "docker build --no-cache -t ${APP_IMAGE} ."
                 }
             }
         }
@@ -40,23 +41,24 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    echo 'Creando red Docker si no existe...'
-                    bat "docker network inspect %DOCKER_NETWORK% 1>nul 2>&1 || docker network create %DOCKER_NETWORK%"
+                    echo "Creando red Docker si no existe..."
+                    bat "docker network inspect ${NETWORK} 1>nul 2>&1 || docker network create ${NETWORK}"
 
-                    echo 'Ejecutando base de datos MySQL...'
-                    bat """
-                        docker run -d --name %MYSQL_CONTAINER% --network %DOCKER_NETWORK% -e MYSQL_ROOT_PASSWORD=root123 -e MYSQL_DATABASE=cruddb -p %MYSQL_PORT%:3306 mysql:8 || exit 0
-                    """
+                    echo "Ejecutando base de datos MySQL..."
+                    bat "docker run -d --name ${MYSQL_CONTAINER} --network ${NETWORK} -e MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} -e MYSQL_DATABASE=${MYSQL_DATABASE} -p 3307:3306 mysql:8 || exit 0"
 
-                    echo 'Si hay tests, agregarlos aquí...'
-                    // Aquí puedes levantar el contenedor de tu app y correr tests
+                    echo "Levantando contenedor de Node.js..."
+                    bat "docker run -d --name ${NODE_CONTAINER} --network ${NETWORK} ${APP_IMAGE}"
+
+                    echo "Ejecutando tests de la aplicación..."
+                    bat "docker exec ${NODE_CONTAINER} npm test"
                 }
             }
         }
 
         stage('Deploy') {
             steps {
-                echo 'Deploy omitido, configurar según tu infraestructura...'
+                echo "Deploy omitido, configurar según tu infraestructura..."
             }
         }
     }
@@ -64,11 +66,10 @@ pipeline {
     post {
         always {
             script {
-                echo 'Post Actions: limpieza de contenedores'
-                bat """
-                    docker stop node_app %MYSQL_CONTAINER% adminer 2>nul || exit 0
-                    docker rm node_app %MYSQL_CONTAINER% adminer 2>nul || exit 0
-                """
+                echo "Post Actions: limpieza de contenedores"
+                bat "docker stop ${NODE_CONTAINER} ${MYSQL_CONTAINER} adminer 2>nul || exit 0"
+                bat "docker rm ${NODE_CONTAINER} ${MYSQL_CONTAINER} adminer 2>nul || exit 0"
+                bat "docker network rm ${NETWORK} 2>nul || exit 0"
             }
         }
     }

@@ -5,11 +5,9 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import personasRoutes from './routes/personas.routes.js';
 
-//initialization
 const app = express();
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-//settings
 app.set('port', process.env.PORT || 3000);
 app.set('views', join(__dirname, 'views'));
 app.engine('.hbs', engine({
@@ -20,26 +18,24 @@ app.engine('.hbs', engine({
 }));
 app.set('view engine', '.hbs');
 
-//middlewares
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-//routes
 app.get('/', (req, res) => {
     res.render('index');
 });
-app.use(personasRoutes);
 
-//public files
+app.use(personasRoutes);
 app.use(express.static(join(__dirname, 'public')));
 
-//export app for testing
 export default app;
 
-//run server only if NOT testing
 if (process.env.NODE_ENV !== 'test') {
     app.listen(app.get('port'), () =>
         console.log('Server listening on port', app.get('port'))
     );
+}
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(3000, () => console.log('Servidor corriendo en puerto 3000'));
 }

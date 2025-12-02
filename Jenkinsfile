@@ -29,13 +29,10 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                echo 'Levantando DB para tests...'
-                bat 'docker-compose up -d db'
-                
-                echo 'Ejecutando tests...'
-                bat 'docker run --rm --env-file .env.test crudjs-app npm test'
-                
-                echo 'Deteniendo DB de tests...'
+                echo 'Ejecutando tests con docker-compose...'
+                // Levanta DB + contenedor de tests en la misma red
+                bat 'docker-compose up --abort-on-container-exit test'
+                // Limpia los contenedores temporales de tests
                 bat 'docker-compose down'
             }
         }

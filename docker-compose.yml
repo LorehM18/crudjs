@@ -35,5 +35,13 @@ services:
     ports:
       - "8080:8080"
 
+  test:
+    image: crudjs-app
+    env_file:
+      - .env.test
+    depends_on:
+      - db
+    command: npm test
+
 volumes:
   mysql_data:

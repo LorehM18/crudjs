@@ -46,7 +46,7 @@ pipeline {
                     
                     echo "Ejecutando base de datos MySQL..."
                     bat """
-                    docker run -d --name %MYSQL_CONTAINER% --network %NETWORK_NAME% -e MYSQL_ROOT_PASSWORD=root123 -e MYSQL_DATABASE=cruddb -p 3306:3306 mysql:8 || echo Puerto 3306 ocupado
+                    docker run -d --name %MYSQL_CONTAINER% --network %NETWORK_NAME% -e MYSQL_ROOT_PASSWORD=root123 -e MYSQL_DATABASE=cruddb -p 3307:3306 mysql:8 || echo Puerto 3306 ocupado
                     """
                     
                     // Aquí podrías agregar ejecución de contenedor Node si necesitas probar la app

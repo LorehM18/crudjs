@@ -8,9 +8,9 @@ pipeline {
                 script {
                     try {
                         bat 'docker build -t crudjs-app .'
-                        echo '✅ Imagen Docker construida'
+                        echo 'Imagen Docker construida'
                     } catch (Exception e) {
-                        echo '⚠️ Build falló: ' + e.getMessage()
+                        echo 'Build falló: ' + e.getMessage()
                         // Continuar de todos modos para pruebas
                     }
                 }
@@ -65,9 +65,9 @@ pipeline {
                             -p 3000:3000 `
                             crudjs-app
                         
-                        Write-Host "✅ Despliegue completado!"
-                        Write-Host "🌐 App: http://localhost:3000"
-                        Write-Host "🗄️  MySQL: localhost:3306"
+                        Write-Host "Despliegue completado!"
+                        Write-Host "App: http://localhost:3000"
+                        Write-Host "MySQL: localhost:3306"
                     '''
                 }
             }
@@ -86,18 +86,18 @@ pipeline {
         }
         
         success {
-            echo '🎉 ¡PIPELINE EXITOSO!'
-            echo '✅ Tests automatizados ejecutados'
-            echo '✅ Aplicación desplegada'
+            echo '¡PIPELINE EXITOSO!'
+            echo 'Tests automatizados ejecutados'
+            echo 'Aplicación desplegada'
         }
         
         failure {
-            echo '❌ Pipeline terminó con errores'
-            echo '📋 Revisar logs para detalles'
+            echo 'Pipeline terminó con errores'
+            echo 'Revisar logs para detalles'
         }
         
         unstable {
-            echo '⚠️ Pipeline inestable'
+            echo 'Pipeline inestable'
             echo 'Algunos warnings pero se completó'
         }
     }

@@ -1,7 +1,7 @@
 // tests/app.test.js
 import request from 'supertest';
 import app from '../src/index.js'; // tu servidor Express
-import pool from '../db'; // tu conexión a MySQL
+import pool from '../src/database.js'; // tu conexión a MySQL
 
 // Se ejecuta antes de todos los tests
 beforeAll(async () => {

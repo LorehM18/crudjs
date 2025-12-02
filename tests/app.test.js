@@ -1,6 +1,6 @@
 // tests/app.test.js
 import request from 'supertest';
-import app from '../app'; // tu servidor Express
+import app from '../src/index.js'; // tu servidor Express
 import pool from '../db'; // tu conexión a MySQL
 
 // Se ejecuta antes de todos los tests

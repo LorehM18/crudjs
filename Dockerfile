@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install --fetch-timeout=60000 --fetch-retries=5
+RUN npm install --fetch-timeout=120000 --fetch-retries=10
 
 COPY . .
 
